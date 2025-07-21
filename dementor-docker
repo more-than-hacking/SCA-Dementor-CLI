@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# MTH Dementor CLI - Docker Wrapper
+# Simple wrapper to run dementor with Docker from the root directory
+
+set -e
+
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}🐳 MTH Dementor CLI - Docker Mode${NC}"
+
+# Check if arguments are provided
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 [dementor-arguments]"
+    echo ""
+    echo "Examples:"
+    echo "  $0 --url https://github.com/octocat/Hello-World --output html"
+    echo "  $0 --repo your-org/your-repo --output html"
+    echo "  $0 --folderpath /path/to/project --output html"
+    echo "  $0 --help"
+    echo ""
+    echo "Docker Features:"
+    echo "  ✅ Automatic volume mounting"
+    echo "  ✅ Persistent results storage"
+    echo "  ✅ Cross-platform compatibility"
+    exit 1
+fi
+
+# Navigate to docker directory and run
+cd docker
+./run-docker.sh run "$@" 

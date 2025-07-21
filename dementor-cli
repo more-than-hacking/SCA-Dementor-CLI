@@ -1,0 +1,269 @@
+#!/usr/bin/env python3
+"""
+SCA-Dementor Main Application
+Orchestrates the complete dependency scanning and vulnerability analysis pipeline.
+"""
+
+import subprocess
+import logging
+import argparse
+import sys
+import os
+from pathlib import Path
+
+# --- Setup logging ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s: %(message)s',
+)
+
+# --- Define script paths ---
+SCRIPTS = {
+    "Repo_Dependency_Fetcher": "core/MTH_REPO_FETCHER.py",
+    "Dependency_Parser": "core/MTH_DEPENDENCY_PARSER.py",
+    "SCA": "core/MTH_SCA_SCANNER.py"
+}
+
+def run_script(name, args=None):
+    """Run a script with optional arguments."""
+    path = Path(SCRIPTS[name])
+    if not path.exists():
+        logging.error(f"Script not found: {path}")
+        return False
+
+    cmd = ["python3", str(path)]
+    if args:
+        cmd.extend(args)
+    
+    logging.info(f"Running: {name} ({path})")
+    if args:
+        logging.info(f"Arguments: {' '.join(args)}")
+    
+    try:
+        subprocess.run(cmd, check=True)
+        logging.info(f"{name} completed successfully.\n")
+        return True
+    except subprocess.CalledProcessError as e:
+        logging.error(f"{name} failed with exit code {e.returncode}")
+        return False
+
+def main():
+    """Main function with command-line argument parsing."""
+    CYAN = "\033[96m"
+    RESET = "\033[0m"
+    # Print banner
+    banner = """
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║      ██████╗ ███████╗███╗   ███╗███████╗███╗   ██╗████████╗ ██████╗ ██████╗  ║
+║      ██╔══██╗██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝██╔═══██╗██╔══██╗ ║
+║      ██║  ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║   ██║   ██║██████╔╝ ║
+║      ██║  ██║██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   ██║   ██║██╔══██╗ ║
+║      ██████╔╝███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   ╚██████╔╝██║  ██║ ║
+║      ╚═════╝ ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝ ║
+║                                                                              ║
+║  ═══════════════════════════════════════════════════════════════════════════ ║
+║                                                                              ║
+║                                                                              ║
+║  🔮 Your Security Companion - Complete dependency scanning & vulnerability   ║
+║     analysis pipeline with multi-format reporting and CI/CD integration      ║
+║                                                                              ║
+║  🎯 By MTH - More Than Hacking                                               ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
+
+    print(CYAN + banner + RESET)
+    
+    parser = argparse.ArgumentParser(
+        description='Complete dependency scanning and vulnerability analysis pipeline',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Full organization scan
+  dementor --full-repo-scan
+
+  # Specific repository (restricted to configured org)
+  dementor --repo your-org/your-repo
+
+  # Direct repository URL (universal scope)
+  dementor --url https://github.com/octocat/Hello-World
+  dementor --url https://github.com/octocat/Hello-World.git
+  dementor --url https://ghp_token@github.com/octocat/Hello-World.git
+
+  # Repository list from file
+  dementor --repo-list repos.txt
+
+  # Local folder (no cloning) - outputs to current directory
+  dementor --folderpath /path/to/local/folder --output html
+
+  # Repository scan with output - saves to current directory
+  dementor --repo your-org/your-repo --output csv
+  dementor --url https://github.com/octocat/Hello-World --output csv
+
+  # Repository scan with output - saves to current directory
+  dementor --repo your-org/your-repo --output html
+  dementor --url https://github.com/octocat/Hello-World --output html
+
+  # Custom worker threads
+  dementor --full-repo-scan --workers 10
+
+  # Output formats
+  dementor --repo your-org/your-repo --output html
+  dementor --url https://github.com/octocat/Hello-World --output html
+  dementor --repo your-org/your-repo --output csv,txt
+  dementor --repo your-org/your-repo --output all
+  
+  # Custom output directory
+  dementor --repo your-org/your-repo --output html --output-dir ~/Documents/Results
+  dementor --url https://github.com/octocat/Hello-World --output html --output-dir ~/Documents/Results
+  dementor --repo your-org/your-repo --output all --output-dir /path/to/project/Results
+        """
+    )
+    
+    # Repository fetching options
+    parser.add_argument('--full-repo-scan', action='store_true',
+                       help='Scan all repositories in the organization')
+    parser.add_argument('--repo', type=str,
+                       help='Specific repository name (format: org/repo-name) - restricted to configured org')
+    parser.add_argument('--url', type=str,
+                       help='Direct repository URL (universal scope - can be any GitHub repo with/without token)')
+    parser.add_argument('--repo-list', type=str,
+                       help='Path to file containing list of repositories to scan')
+    parser.add_argument('--folderpath', type=str,
+                       help='Path to local folder (no cloning needed)')
+    parser.add_argument('--workers', type=int, default=5,
+                       help='Number of worker threads (default: 5)')
+    
+    # Pipeline control options
+    parser.add_argument('--skip-dependency-parser', action='store_true',
+                       help='Skip dependency parsing step')
+    parser.add_argument('--skip-sca', action='store_true',
+                       help='Skip vulnerability scanning step')
+
+    parser.add_argument('--fetch-only', action='store_true',
+                       help='Only fetch repositories, skip all processing')
+    parser.add_argument('--parse-only', action='store_true',
+                       help='Only parse dependencies, skip fetching and scanning')
+    parser.add_argument('--scan-only', action='store_true',
+                       help='Only scan vulnerabilities, skip fetching and parsing')
+    
+    # Output format options
+    parser.add_argument('--output', type=str,
+                       help='Output format(s): html,csv,txt,xml,json,all (default: json)')
+    parser.add_argument('--output-dir', type=str,
+                       help='Output directory for reports (default: ./Results)')
+    
+    args = parser.parse_args()
+    
+    # Validate arguments
+    fetch_modes = [bool(args.full_repo_scan), bool(args.repo), bool(args.url), bool(args.repo_list), bool(args.folderpath)]
+    if not any(fetch_modes):
+        logging.error("No repository fetching mode specified. Use --full-repo-scan, --repo, --url, --repo-list, or --folderpath")
+        parser.print_help()
+        sys.exit(1)
+    
+    if sum(fetch_modes) > 1:
+        logging.error("Multiple repository fetching modes specified. Use only one.")
+        parser.print_help()
+        sys.exit(1)
+    
+    # Set output directory - CLI tool always outputs to files
+    if not args.output_dir:
+        args.output_dir = "Results"  # Default to Results directory
+    logging.info(f"📁 Output will be saved to: {os.path.abspath(args.output_dir)}")
+    
+    # Build repository fetching arguments
+    repo_fetch_args = []
+    if args.full_repo_scan:
+        repo_fetch_args.append('--full-repo-scan')
+    elif args.repo:
+        repo_fetch_args.extend(['--repo', args.repo])
+    elif args.url:
+        repo_fetch_args.extend(['--url', args.url])
+    elif args.repo_list:
+        repo_fetch_args.extend(['--repo-list', args.repo_list])
+    elif args.folderpath:
+        repo_fetch_args.extend(['--folderpath', args.folderpath])
+    
+    if args.workers != 5:
+        repo_fetch_args.extend(['--workers', str(args.workers)])
+    
+    # Force fresh scan and one-time scan for --output scans
+    if args.output:
+        repo_fetch_args.append('--force-scan')
+        repo_fetch_args.append('--one-time-scan')
+    
+    try:
+        # Step 1: Repository Fetching (unless parse-only or scan-only)
+        if not (args.parse_only or args.scan_only):
+            if not run_script("Repo_Dependency_Fetcher", repo_fetch_args):
+                logging.error("❌ Repository fetching failed. Pipeline aborted.")
+                sys.exit(1)
+        else:
+            logging.info("Skipping repository fetching (parse-only or scan-only mode)")
+        
+        # Step 2: Dependency Parsing (unless fetch-only or scan-only)
+        if not (args.fetch_only or args.scan_only or args.skip_dependency_parser):
+            # Pass repository arguments to Dependency_Parser
+            dep_parser_args = []
+            if args.repo:
+                dep_parser_args.extend(['--repo', args.repo])
+            elif args.url:
+                dep_parser_args.extend(['--url', args.url])
+            elif args.repo_list:
+                dep_parser_args.extend(['--repo-list', args.repo_list])
+            
+            # Force fresh scan and one-time scan for --output scans
+            if args.output:
+                dep_parser_args.append('--force-scan')
+                dep_parser_args.append('--one-time-scan')
+            
+            if not run_script("Dependency_Parser", dep_parser_args):
+                logging.error("❌ Dependency parsing failed. Pipeline aborted.")
+                sys.exit(1)
+        else:
+            logging.info("Skipping dependency parsing")
+        
+        # Step 3: Vulnerability Scanning (unless fetch-only or parse-only)
+        if not (args.fetch_only or args.parse_only or args.skip_sca):
+            # Pass repository arguments to SCA_NO_LLM
+            sca_args = []
+            if args.repo:
+                sca_args.extend(['--repo', args.repo])
+            elif args.url:
+                sca_args.extend(['--url', args.url])
+            elif args.repo_list:
+                sca_args.extend(['--repo-list', args.repo_list])
+            elif args.folderpath:
+                # For folderpath scans, pass the folder name as --repo to process only that folder
+                folder_name = os.path.basename(args.folderpath)
+                sca_args.extend(['--repo', folder_name])
+            
+            # Pass output format argument
+            if args.output:
+                sca_args.extend(['--output', args.output])
+                sca_args.append('--one-time-scan')
+            
+            # Pass output directory argument
+            if args.output_dir:
+                sca_args.extend(['--output-dir', args.output_dir])
+            
+            if not run_script("SCA", sca_args):
+                logging.error("❌ Vulnerability scanning failed. Pipeline aborted.")
+                sys.exit(1)
+        else:
+            logging.info("Skipping vulnerability scanning")
+        
+        logging.info("✅ All steps completed successfully.")
+        
+    except KeyboardInterrupt:
+        logging.info("Pipeline interrupted by user.")
+        sys.exit(1)
+    except Exception as e:
+        logging.error("❌ Pipeline aborted due to error.")
+        logging.exception(e)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

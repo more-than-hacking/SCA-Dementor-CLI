@@ -1,0 +1,6 @@
+latest-version_parsers:
+  Maven: latest-version_parsers.maven_parser
+  PyPI: latest-version_parsers.pypi_parser
+  Go: latest-version_parsers.go_parser
+  npm: latest-version_parsers.npm_parser
+  NuGet: latest-version_parsers.nuget_parser

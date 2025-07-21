@@ -1,0 +1,58 @@
+# Core HTTP and API libraries
+requests>=2.31.0
+PyGithub>=1.59
+
+# Configuration and data parsing
+pyyaml>=6.0.1
+python-dotenv>=1.0.1
+
+# Progress bars and utilities
+tqdm>=4.66.2
+
+# Version handling and packaging
+packaging>=24.0
+
+# Web framework for API server
+flask>=2.3.3
+
+# LLM integration
+ollama>=0.1.8
+
+# Enhanced HTTP handling
+urllib3>=2.0.0
+
+# Enhanced logging
+colorlog>=6.7.0
+
+# Better JSON handling
+jsonschema>=4.17.0
+
+# Enhanced YAML support
+ruamel.yaml>=0.17.0
+
+# Better error handling and retries
+tenacity>=8.2.0
+
+# Type checking support
+typing-extensions>=4.5.0
+
+# Production WSGI server
+gunicorn>=21.2.0
+
+# Health check utilities
+psutil>=5.9.0
+
+# Enhanced security
+cryptography>=41.0.0
+
+# Better file handling
+pathlib2>=2.3.7
+
+# MongoDB integration
+pymongo>=4.6.0
+
+# Development dependencies (optional)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0

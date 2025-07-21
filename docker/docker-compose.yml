@@ -1,0 +1,26 @@
+services:
+  sca-dementor:
+    build: .
+    container_name: sca-dementor
+    volumes:
+      # Mount current directory for development
+      - .:/app
+      # Mount git cache for faster operations
+      - git-cache:/app/.git-cache
+      # Mount results for persistence
+      - results:/app/results
+    environment:
+      - OLLAMA_HOST=host.docker.internal:11434
+      - PYTHONPATH=/app
+    # Use extra_hosts for macOS compatibility
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # For interactive use - keep container running
+    stdin_open: true
+    tty: true
+    # Don't auto-start, let user run commands
+    command: ["tail", "-f", "/dev/null"]
+
+volumes:
+  git-cache:
+  results: 
