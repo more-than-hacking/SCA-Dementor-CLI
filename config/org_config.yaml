@@ -1,0 +1,11 @@
+# GitHub Configuration Template
+# Replace with your actual GitHub organization and token
+
+github:
+  org_name: more-than-hacking
+  token: ghp_your_github_personal_access_token_here
+
+# Example:
+# github:
+#   org_name: my-company
+#   token: ghp_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz 
