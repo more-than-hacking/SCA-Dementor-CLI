@@ -84,7 +84,7 @@ Examples:
   dementor --full-repo-scan
 
   # Specific repository (restricted to configured org)
-  dementor --repo your-org/your-repo
+  dementor --repo SCA-Dementor-CLI
 
   # Direct repository URL (universal scope)
   dementor --url https://github.com/octocat/Hello-World
@@ -98,26 +98,26 @@ Examples:
   dementor --folderpath /path/to/local/folder --output html
 
   # Repository scan with output - saves to current directory
-  dementor --repo your-org/your-repo --output csv
+  dementor --repo SCA-Dementor-CLI --output csv
   dementor --url https://github.com/octocat/Hello-World --output csv
 
   # Repository scan with output - saves to current directory
-  dementor --repo your-org/your-repo --output html
+  dementor --repo SCA-Dementor-CLI --output html
   dementor --url https://github.com/octocat/Hello-World --output html
 
   # Custom worker threads
   dementor --full-repo-scan --workers 10
 
   # Output formats
-  dementor --repo your-org/your-repo --output html
+  dementor --repo SCA-Dementor-CLI --output html
   dementor --url https://github.com/octocat/Hello-World --output html
-  dementor --repo your-org/your-repo --output csv,txt
-  dementor --repo your-org/your-repo --output all
+  dementor --repo SCA-Dementor-CLI --output csv,txt
+  dementor --repo SCA-Dementor-CLI --output all
   
   # Custom output directory
-  dementor --repo your-org/your-repo --output html --output-dir ~/Documents/Results
+  dementor --repo SCA-Dementor-CLI --output html --output-dir ~/Documents/Results
   dementor --url https://github.com/octocat/Hello-World --output html --output-dir ~/Documents/Results
-  dementor --repo your-org/your-repo --output all --output-dir /path/to/project/Results
+  dementor --repo SCA-Dementor-CLI --output all --output-dir /path/to/project/Results
         """
     )
     

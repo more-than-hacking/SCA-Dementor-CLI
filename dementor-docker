@@ -18,7 +18,7 @@ if [ $# -eq 0 ]; then
     echo ""
     echo "Examples:"
     echo "  $0 --url https://github.com/octocat/Hello-World --output html"
-    echo "  $0 --repo your-org/your-repo --output html"
+    echo "  $0 --repo SCA-Dementor-CLI --output html"
     echo "  $0 --folderpath /path/to/project --output html"
     echo "  $0 --help"
     echo ""

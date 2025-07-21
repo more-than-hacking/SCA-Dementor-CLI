@@ -11,7 +11,7 @@ A powerful CLI tool for scanning GitHub repositories and local projects for secu
 ### 🎯 Super Quick Start (No Configuration Needed!)
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/SCA-Dementor-CLI
+git clone https://github.com/more-than-hacking/SCA-Dementor-CLI
 cd SCA-Dementor-CLI
 
 # Run setup
@@ -114,10 +114,10 @@ You can include your GitHub Personal Access Token directly in the URL, eliminati
 dementor-cli --url https://github.com/octocat/Hello-World --output html
 
 # Private repository with embedded token
-dementor-cli --url https://ghp_YOUR_TOKEN_HERE@github.com/your-org/private-repo --output html
+dementor-cli --url https://ghp_YOUR_TOKEN_HERE@github.com/more-than-hacking/private-repo --output html
 
 # Example with actual token format
-dementor-cli --url https://ghp_abc123def456@github.com/your-org/private-repo --output html
+dementor-cli --url https://ghp_abc123def456@github.com/more-than-hacking/private-repo --output html
 ```
 
 **Benefits:**
@@ -131,13 +131,13 @@ For repeated scans of the same organization, update your GitHub token in `config
 
 ```yaml
 github:
-  org_name: your-org-name
+  org_name: more-than-hacking
   token: your-github-token
 ```
 
 Then use the `--repo` flag:
 ```bash
-dementor-cli --repo your-org/repo-name --output html
+dementor-cli --repo SCA-Dementor-CLI --output html
 ```
 
 ## 🐳 Docker Setup
@@ -190,22 +190,28 @@ cd docker && ./run-docker.sh status
 dementor-cli --url https://github.com/octocat/Hello-World --output html
 
 # Private repository with embedded token
-dementor-cli --url https://ghp_YOUR_TOKEN_HERE@github.com/your-org/private-repo --output html
+dementor-cli --url https://ghp_YOUR_TOKEN_HERE@github.com/more-than-hacking/private-repo --output html
 
 # Docker mode
 ./dementor-docker --url https://github.com/octocat/Hello-World --output html
 
 # Docker with private repo
-./dementor-docker --url https://ghp_YOUR_TOKEN_HERE@github.com/your-org/private-repo --output html
+./dementor-docker --url https://ghp_YOUR_TOKEN_HERE@github.com/more-than-hacking/private-repo --output html
 ```
 
 ### Scan Repository from Configured Organization
 ```bash
-# Native mode
-dementor-cli --repo your-org/repo-name --output html
+# Native mode (just repo name - uses configured org)
+dementor-cli --repo SCA-Dementor-CLI --output html
 
-# Docker mode
-./dementor-docker --repo your-org/repo-name --output html
+# Native mode (full org/repo format)
+dementor-cli --repo more-than-hacking/SCA-Dementor-CLI --output html
+
+# Docker mode (just repo name - uses configured org)
+./dementor-docker --repo SCA-Dementor-CLI --output html
+
+# Docker mode (full org/repo format)
+./dementor-docker --repo more-than-hacking/SCA-Dementor-CLI --output html
 ```
 
 ### Scan Local Project
